@@ -61,8 +61,9 @@ loginForm.addEventListener("submit", async (e) => {
 
   const email = document.getElementById("emailInput").value.trim();
   const senha = document.getElementById("senhaInput").value;
+  const normalizedEmail = email.toLowerCase();
 
-  if (email !== ALLOWED_ADMIN_EMAIL){
+  if (normalizedEmail !== ALLOWED_ADMIN_EMAIL){
     loginError.textContent = "Use o e-mail autorizado para acessar o painel.";
     loginBtn.disabled = false;
     loginBtn.textContent = "Entrar";
@@ -70,10 +71,27 @@ loginForm.addEventListener("submit", async (e) => {
   }
 
   try{
-    await signInWithEmailAndPassword(auth, email, senha);
+    await signInWithEmailAndPassword(auth, normalizedEmail, senha);
   } catch (err){
     console.error(err);
-    loginError.textContent = "E-mail ou senha incorretos.";
+    switch (err?.code) {
+      case "auth/invalid-email":
+        loginError.textContent = "O e-mail informado não parece válido.";
+        break;
+      case "auth/user-not-found":
+        loginError.textContent = "Esse usuário não existe neste projeto Firebase.";
+        break;
+      case "auth/wrong-password":
+      case "auth/invalid-credential":
+        loginError.textContent = "Senha incorreta. Confira se o usuário foi criado no Firebase Authentication.";
+        break;
+      case "auth/too-many-requests":
+        loginError.textContent = "Muitas tentativas. Aguarde um pouco e tente novamente.";
+        break;
+      default:
+        loginError.textContent = "Não foi possível entrar. Verifique se o usuário foi criado no Firebase Authentication deste projeto.";
+        break;
+    }
   } finally {
     loginBtn.disabled = false;
     loginBtn.textContent = "Entrar";
