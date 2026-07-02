@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin · Desabrochar</title>
+<link rel="icon" href="assets/logo.png">
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <img src="assets/logo.png" alt="Desabrochar">
+    <h1>Painel administrativo</h1>
+    <p>Entre com sua conta para ver as inscrições do congresso.</p>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="emailInput">E-mail</label>
+        <input type="email" id="emailInput" placeholder="seuemail@igreja.com" autocomplete="username" value="laaryag@gmail.com" required>
+      </div>
+      <div class="field">
+        <label for="senhaInput">Senha</label>
+        <input type="password" id="senhaInput" placeholder="••••••••" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn" id="loginBtn">Entrar</button>
+      <p class="login-error" id="loginError"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== PAINEL ===================== -->
+<div class="admin-shell" id="adminShell">
+  <div class="admin-topbar">
+    <div class="admin-brand">
+      <img src="assets/logo.png" alt="Desabrochar">
+      <span>Painel · Desabrochar</span>
+    </div>
+    <button class="btn btn-outline" id="logoutBtn">Sair</button>
+  </div>
+
+  <main class="admin-main">
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-label">Total de inscritas</span>
+        <span class="stat-value" id="statTotal">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Inscritas hoje</span>
+        <span class="stat-value" id="statToday">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Última inscrição</span>
+        <span class="stat-value" id="statLast" style="font-size:1.1rem;">—</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Inscrições</h2>
+        <div class="panel-actions">
+          <input type="text" class="search-input" id="searchInput" placeholder="Buscar por nome ou telefone...">
+          <button class="btn btn-outline btn-small" id="exportBtn">Exportar CSV</button>
+        </div>
+      </div>
+
+      <div id="tableWrap">
+        <div class="loading-row" id="loadingRow">Carregando inscrições...</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+</html>
