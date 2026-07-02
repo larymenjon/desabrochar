@@ -10,6 +10,25 @@ if (header){
   };
   document.addEventListener("scroll", onScroll);
   onScroll();
+
+  const menuToggle = document.getElementById("menuToggle");
+  const mainNav = document.getElementById("mainNav");
+  const setMenuState = (open) => {
+    header.classList.toggle("nav-open", open);
+    menuToggle?.setAttribute("aria-expanded", open ? "true" : "false");
+  };
+
+  menuToggle?.addEventListener("click", () => {
+    setMenuState(!header.classList.contains("nav-open"));
+  });
+
+  mainNav?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => setMenuState(false));
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 760) setMenuState(false);
+  });
 }
 
 /* ---------- Modal open/close ---------- */
