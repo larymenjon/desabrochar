@@ -1,14 +1,14 @@
 :root{
-  --white: #ffffff;
-  --blush: #fdf3f7;
-  --fuchsia: #b5316b;
-  --fuchsia-deep: #7a1f4b;
-  --gold: #c9a24b;
-  --gold-light: #e8ce8e;
-  --gold-dark: #a3803a;
-  --ink: #3a1930;
-  --ink-soft: #6b4a5c;
-  --border: #ecdde5;
+  --white: #fff9f4;
+  --blush: #f8efe6;
+  --fuchsia: #8a5361;
+  --fuchsia-deep: #4b1724;
+  --gold: #d8b57a;
+  --gold-light: #efcbcb;
+  --gold-dark: #8a5361;
+  --ink: #4b1724;
+  --ink-soft: #8a5361;
+  --border: #f6e6e6;
   --serif: 'Cormorant Garamond', serif;
   --sans: 'Jost', -apple-system, 'Segoe UI', sans-serif;
 }
@@ -31,8 +31,8 @@ h1,h2,h3{ font-family: var(--serif); color: var(--fuchsia-deep); margin:0; font-
   justify-content:center;
   padding: 24px;
   background:
-    radial-gradient(ellipse 60% 50% at 50% 0%, #f7e3ee 0%, transparent 60%),
-    linear-gradient(180deg, var(--blush) 0%, var(--white) 100%);
+    radial-gradient(ellipse 60% 50% at 50% 0%, #f6e6e6 0%, transparent 60%),
+    linear-gradient(180deg, var(--white) 0%, var(--blush) 55%, var(--white) 100%);
 }
 .login-card{
   width:100%;
@@ -41,7 +41,7 @@ h1,h2,h3{ font-family: var(--serif); color: var(--fuchsia-deep); margin:0; font-
   border-radius: 6px;
   padding: 44px 36px;
   text-align:center;
-  box-shadow: 0 30px 70px -30px rgba(58,25,48,.35);
+  box-shadow: 0 30px 70px -30px rgba(75,23,36,.24);
   border-top: 3px solid var(--gold);
 }
 .login-card img{ height:56px; margin: 0 auto 20px; }
@@ -86,16 +86,16 @@ h1,h2,h3{ font-family: var(--serif); color: var(--fuchsia-deep); margin:0; font-
   border: none;
   cursor:pointer;
   background: linear-gradient(135deg, var(--fuchsia) 0%, var(--fuchsia-deep) 100%);
-  color: #fff;
+  color: var(--white);
   transition: transform .3s ease, box-shadow .3s ease;
 }
-.btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 26px -12px rgba(122,31,75,.5); }
+.btn:hover{ transform: translateY(-1px); box-shadow: 0 12px 26px -12px rgba(75,23,36,.35); }
 .btn.btn-outline{
   background: transparent;
   border: 1px solid var(--gold);
   color: var(--fuchsia-deep);
 }
-.btn.btn-outline:hover{ background: var(--gold); color:#fff; }
+.btn.btn-outline:hover{ background: var(--gold); color: var(--white); }
 .btn:disabled{ opacity:.6; cursor:default; transform:none; }
 
 .login-error{

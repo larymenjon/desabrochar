@@ -111,12 +111,12 @@ function validate(){
 
   if (nome.length < 3){
     nomeError.textContent = "Digite seu nome completo.";
-    nomeInput.style.borderColor = "#b5316b";
+    nomeInput.style.borderColor = "#8a5361";
     valid = false;
   }
   if (telefoneDigits.length < 10){
     telefoneError.textContent = "Digite um telefone válido com DDD.";
-    telefoneInput.style.borderColor = "#b5316b";
+    telefoneInput.style.borderColor = "#8a5361";
     valid = false;
   }
   return valid;
