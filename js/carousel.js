@@ -124,7 +124,10 @@ function initCarousel(images){
     const visibleSlides = Math.max(1, perView());
     slideWidth = viewport.clientWidth / visibleSlides;
     loopWidth = slideWidth * slides.length;
-    viewport.style.height = `${slideWidth}px`;
+    const isMobile = window.matchMedia("(max-width: 760px)").matches;
+    const slideHeight = isMobile ? slideWidth : slideWidth * 1.22;
+
+    viewport.style.height = `${slideHeight}px`;
     track.style.width = `${slideWidth * slideEls.length}px`;
     slideEls.forEach((slide) => {
       slide.style.flex = `0 0 ${slideWidth}px`;
