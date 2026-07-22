@@ -304,7 +304,7 @@ h1,h2,h3{
   box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
   scrollbar-width: none;
   scroll-behavior: smooth;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: none;
 }
 .photo-carousel__viewport::-webkit-scrollbar{
   display:none;
@@ -324,6 +324,7 @@ h1,h2,h3{
   margin: 0;
   isolation: isolate;
   scroll-snap-align: start;
+  cursor: pointer;
 }
 .photo-carousel__slide img{
   min-width: 0;
@@ -428,6 +429,65 @@ h1,h2,h3{
 .photo-carousel__dot.is-active{
   width: 30px;
   background: linear-gradient(90deg, var(--fuchsia) 0%, var(--gold) 100%);
+}
+
+.carousel-lightbox{
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .28s ease;
+}
+.carousel-lightbox.is-open{
+  opacity: 1;
+  pointer-events: auto;
+}
+.carousel-lightbox__backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(34, 10, 18, .82);
+  backdrop-filter: blur(6px);
+}
+.carousel-lightbox__dialog{
+  position: relative;
+  z-index: 1;
+  width: min(100%, 1080px);
+  max-height: min(88vh, 920px);
+  padding: 20px;
+  border-radius: 28px;
+  background: rgba(255,249,244,.98);
+  box-shadow: 0 34px 80px -28px rgba(0,0,0,.48);
+}
+.carousel-lightbox__dialog img{
+  width: 100%;
+  max-height: calc(88vh - 40px);
+  object-fit: contain;
+  border-radius: 18px;
+  background: #f7eee7;
+}
+.carousel-lightbox__close{
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(216,181,122,.38);
+  border-radius: 999px;
+  background: rgba(255,249,244,.94);
+  color: var(--fuchsia-deep);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.carousel-lightbox__close svg{
+  width: 18px;
+  height: 18px;
 }
 .photo-carousel-note{
   margin: 14px 4px 0;
@@ -1015,21 +1075,52 @@ section{ position: relative; }
   .brand img{ height: 46px; }
   .hero h1{ font-size: clamp(2.35rem, 10vw, 3.5rem); }
   .hero-sub{ max-width: 100%; }
-  .hero-feature-grid{ grid-template-columns: 1fr; gap: 18px; }
-  .hero-info-card{ padding: 28px 24px; }
+  .hero-feature-grid{
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin: 22px auto 26px;
+  }
+  .hero-info-card{
+    padding: 24px 20px;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+  }
   .hero-date{ font-size: clamp(2rem, 9vw, 2.8rem); }
-  .photo-carousel-shell{ padding: 26px 18px 24px; }
+  .hero-location{
+    justify-content: center;
+    text-align: center;
+  }
+  .photo-carousel-shell{
+    margin-top: 26px;
+    padding: 24px 0 22px;
+  }
   .photo-carousel__slide img{
     object-fit: contain;
     object-position: center;
   }
-  .photo-carousel{ grid-template-columns: auto minmax(0, 1fr) auto; }
+  .photo-carousel{
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    position: relative;
+  }
   .photo-carousel__control{
     width: 44px;
     height: 44px;
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    transform: translateY(-50%);
   }
+  .photo-carousel__control--prev{ left: 8px; }
+  .photo-carousel__control--next{ right: 8px; }
   .photo-carousel__dots{ margin-top: 16px; }
-  .photo-carousel__viewport{ aspect-ratio: 2 / 1; }
+  .photo-carousel__viewport{
+    aspect-ratio: 2 / 1;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
   .menu-toggle{ display:inline-flex; }
   .main-nav{
     position: fixed;
@@ -1072,8 +1163,34 @@ section{ position: relative; }
   .content-card{ padding: 26px; }
   .content-card--featured{ padding: 30px 22px; }
   .content-card-actions .btn{ width: 100%; min-width: 0; }
-  .photo-carousel-shell{ padding: 24px 12px 20px; }
+  .photo-carousel-shell{
+    padding: 22px 0 18px;
+  }
   .photo-carousel__viewport{ aspect-ratio: 1 / 1; }
+  .photo-carousel__control{
+    width: 38px;
+    height: 38px;
+  }
+  .photo-carousel__control--prev{ left: 6px; }
+  .photo-carousel__control--next{ right: 6px; }
+  .photo-carousel-head{
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .photo-carousel-head h2{
+    font-size: clamp(1.35rem, 8vw, 1.9rem);
+  }
+  .carousel-lightbox{
+    padding: 12px;
+  }
+  .carousel-lightbox__dialog{
+    padding: 14px;
+    border-radius: 22px;
+  }
+  .carousel-lightbox__dialog img{
+    max-height: 78vh;
+    border-radius: 14px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce){

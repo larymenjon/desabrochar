@@ -57,6 +57,9 @@ function initCarousel(images){
   const dots = carousel.querySelector("[data-carousel-dots]");
   const prevBtn = carousel.querySelector("[data-carousel-prev]");
   const nextBtn = carousel.querySelector("[data-carousel-next]");
+  const lightbox = document.getElementById("carouselLightbox");
+  const lightboxImage = document.getElementById("carouselLightboxImage");
+  const lightboxClose = document.getElementById("carouselLightboxClose");
 
   if (!viewport || !track || !dots || !prevBtn || !nextBtn) return;
 
@@ -78,8 +81,10 @@ function initCarousel(images){
     return;
   }
 
-  track.innerHTML = slides.map((slide, index) => `
-    <figure class="photo-carousel__slide" data-slide-index="${index}">
+  const renderedSlides = slides.concat(slides);
+
+  track.innerHTML = renderedSlides.map((slide, index) => `
+    <figure class="photo-carousel__slide" data-slide-index="${index % slides.length}" data-physical-index="${index}">
       <img src="${escapeHtml(slide.src)}" alt="${escapeHtml(slide.alt)}" loading="${index < 3 ? "eager" : "lazy"}" decoding="async">
       ${slide.caption ? `<figcaption class="photo-carousel__caption">${escapeHtml(slide.caption)}</figcaption>` : ""}
     </figure>
@@ -93,6 +98,10 @@ function initCarousel(images){
   const dotEls = Array.from(dots.querySelectorAll(".photo-carousel__dot"));
   let currentIndex = 0;
   let autoplayId = null;
+  let lastAutoplayFrame = null;
+  let slideWidth = 0;
+  let loopWidth = 0;
+  let autoplayStoppedByUser = false;
 
   const perView = () => {
     const raw = getComputedStyle(document.documentElement).getPropertyValue("--carousel-per-view").trim();
@@ -100,50 +109,103 @@ function initCarousel(images){
     return Number.isFinite(value) && value > 0 ? value : 3;
   };
 
+  const updateDots = () => {
+    dotEls.forEach((dot, dotIndex) => {
+      dot.classList.toggle("is-active", dotIndex === currentIndex);
+    });
+  };
+
+  const stopAutoplayForever = () => {
+    autoplayStoppedByUser = true;
+    stopAutoplay();
+  };
+
   const layoutSlides = () => {
     const visibleSlides = Math.max(1, perView());
-    const width = viewport.clientWidth / visibleSlides;
-    viewport.style.height = `${width}px`;
-    track.style.width = `${width * slideEls.length}px`;
+    slideWidth = viewport.clientWidth / visibleSlides;
+    loopWidth = slideWidth * slides.length;
+    viewport.style.height = `${slideWidth}px`;
+    track.style.width = `${slideWidth * slideEls.length}px`;
     slideEls.forEach((slide) => {
-      slide.style.flex = `0 0 ${width}px`;
-      slide.style.width = `${width}px`;
-      slide.style.maxWidth = `${width}px`;
+      slide.style.flex = `0 0 ${slideWidth}px`;
+      slide.style.width = `${slideWidth}px`;
+      slide.style.maxWidth = `${slideWidth}px`;
     });
+  };
+
+  const normalizeLoop = () => {
+    if (!loopWidth) return;
+
+    if (viewport.scrollLeft >= loopWidth){
+      viewport.scrollLeft -= loopWidth;
+    } else if (viewport.scrollLeft < 0){
+      viewport.scrollLeft += loopWidth;
+    }
+  };
+
+  const physicalIndexFromScroll = () => {
+    if (!slideWidth) return 0;
+    return Math.round(viewport.scrollLeft / slideWidth);
   };
 
   const scrollToIndex = (index, smooth = true) => {
     currentIndex = (index + slides.length) % slides.length;
-    const targetSlide = slideEls[currentIndex];
-    if (!targetSlide) return;
+    normalizeLoop();
 
-    const targetLeft = targetSlide.offsetLeft;
+    const currentPhysicalIndex = physicalIndexFromScroll();
+    const currentCycle = Math.floor(currentPhysicalIndex / slides.length);
+    const candidates = [
+      (currentCycle - 1) * slides.length + currentIndex,
+      currentCycle * slides.length + currentIndex,
+      (currentCycle + 1) * slides.length + currentIndex
+    ].filter((candidate) => candidate >= 0 && candidate < slideEls.length);
+
+    const targetPhysicalIndex = candidates.reduce((best, candidate) => {
+      if (best === null) return candidate;
+      return Math.abs(candidate - currentPhysicalIndex) < Math.abs(best - currentPhysicalIndex) ? candidate : best;
+    }, null);
+
+    if (targetPhysicalIndex === null) return;
+
+    const targetLeft = targetPhysicalIndex * slideWidth;
     viewport.scrollTo({
       left: targetLeft,
       behavior: smooth ? "smooth" : "auto"
     });
-    dotEls.forEach((dot, dotIndex) => {
-      dot.classList.toggle("is-active", dotIndex === currentIndex);
-    });
+    updateDots();
   };
 
   const syncFromScroll = () => {
+    normalizeLoop();
+
     const viewportLeft = viewport.scrollLeft;
-    let bestIndex = 0;
-    let bestDistance = Number.POSITIVE_INFINITY;
+    currentIndex = slideWidth ? Math.round(viewportLeft / slideWidth) % slides.length : 0;
+    updateDots();
+  };
 
-    slideEls.forEach((slide, index) => {
-      const distance = Math.abs(slide.offsetLeft - viewportLeft);
-      if (distance < bestDistance){
-        bestDistance = distance;
-        bestIndex = index;
-      }
-    });
+  const openLightbox = (slideIndex) => {
+    if (!lightbox || !lightboxImage) return;
 
-    currentIndex = bestIndex;
-    dotEls.forEach((dot, dotIndex) => {
-      dot.classList.toggle("is-active", dotIndex === currentIndex);
-    });
+    const slide = slides[slideIndex];
+    if (!slide) return;
+
+    stopAutoplayForever();
+    lightboxImage.src = slide.src;
+    lightboxImage.alt = slide.alt || "Foto da edicao de 2025";
+    lightbox.classList.add("is-open");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    lightboxClose?.focus();
+  };
+
+  const closeLightbox = () => {
+    if (!lightbox || !lightboxImage || !lightbox.classList.contains("is-open")) return;
+
+    lightbox.classList.remove("is-open");
+    lightbox.setAttribute("aria-hidden", "true");
+    lightboxImage.src = "";
+    lightboxImage.alt = "";
+    document.body.style.overflow = "";
   };
 
   const goNext = () => {
@@ -164,53 +226,79 @@ function initCarousel(images){
 
   const stopAutoplay = () => {
     if (autoplayId){
-      clearInterval(autoplayId);
+      window.cancelAnimationFrame(autoplayId);
       autoplayId = null;
     }
+    lastAutoplayFrame = null;
   };
 
   const startAutoplay = () => {
-    if (slides.length < 2 || autoplayId) return;
-    autoplayId = setInterval(() => {
-      const maxScroll = viewport.scrollWidth - viewport.clientWidth;
-      if (maxScroll <= 0) return;
+    if (slides.length < 2 || autoplayId || autoplayStoppedByUser) return;
 
-      if (viewport.scrollLeft >= maxScroll - 1){
-        viewport.scrollLeft = 0;
-        currentIndex = 0;
-        syncFromScroll();
-        return;
+    const speed = window.matchMedia("(max-width: 760px)").matches ? 0.18 : 0.28;
+
+    const step = (timestamp) => {
+      if (lastAutoplayFrame === null){
+        lastAutoplayFrame = timestamp;
       }
 
-      viewport.scrollLeft += 0.7;
-    }, 30);
-  };
+      const elapsed = timestamp - lastAutoplayFrame;
+      lastAutoplayFrame = timestamp;
 
-  const restartAutoplay = () => {
-    stopAutoplay();
-    startAutoplay();
+      viewport.scrollLeft += elapsed * speed;
+      normalizeLoop();
+      syncFromScroll();
+
+      autoplayId = window.requestAnimationFrame(step);
+    };
+
+    autoplayId = window.requestAnimationFrame(step);
   };
 
   prevBtn.addEventListener("click", () => {
+    stopAutoplayForever();
     goPrev();
-    restartAutoplay();
   });
 
   nextBtn.addEventListener("click", () => {
+    stopAutoplayForever();
     goNext();
-    restartAutoplay();
   });
 
   dotEls.forEach((dot, index) => {
     dot.addEventListener("click", () => {
+      stopAutoplayForever();
       scrollToIndex(index, true);
-      restartAutoplay();
+    });
+  });
+
+  slideEls.forEach((slide) => {
+    slide.addEventListener("click", () => {
+      const slideIndex = Number(slide.dataset.slideIndex || 0);
+      openLightbox(slideIndex);
     });
   });
 
   viewport.addEventListener("scroll", () => {
     window.requestAnimationFrame(syncFromScroll);
   }, { passive: true });
+
+  viewport.addEventListener("pointerdown", () => {
+    stopAutoplayForever();
+  }, { passive: true });
+
+  lightboxClose?.addEventListener("click", closeLightbox);
+  lightbox?.addEventListener("click", (event) => {
+    if (event.target instanceof HTMLElement && event.target.hasAttribute("data-lightbox-close")){
+      closeLightbox();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape"){
+      closeLightbox();
+    }
+  });
 
   if ("ResizeObserver" in window){
     const observer = new ResizeObserver(() => {
