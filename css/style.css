@@ -326,6 +326,15 @@ h1,h2,h3{
   scroll-snap-align: start;
   cursor: pointer;
 }
+.photo-carousel__slide-bg{
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(24px) brightness(.82) saturate(1.15);
+  transform: scale(1.15);
+  z-index: 0;
+}
 .photo-carousel__slide img{
   min-width: 0;
   width:100%;
@@ -333,6 +342,8 @@ h1,h2,h3{
   object-fit: cover;
   background: rgba(255,249,244,.88);
   border-radius: 0;
+  position: relative;
+  z-index: 1;
 }
 .photo-carousel__slide::after{
   content:'';
@@ -341,13 +352,14 @@ h1,h2,h3{
   background: linear-gradient(180deg, transparent 62%, rgba(75,23,36,.22) 100%);
   pointer-events:none;
   border-radius: 0;
+  z-index: 2;
 }
 .photo-carousel__caption{
   position:absolute;
   left: 20px;
   right: 20px;
   bottom: 18px;
-  z-index: 1;
+  z-index: 3;
   color: var(--white);
   font-size: .92rem;
   line-height: 1.5;
@@ -1166,7 +1178,7 @@ section{ position: relative; }
   .photo-carousel-shell{
     padding: 22px 0 18px;
   }
-  .photo-carousel__viewport{ aspect-ratio: 1 / 1; }
+  .photo-carousel__viewport{ aspect-ratio: 4 / 5; }
   .photo-carousel__control{
     width: 38px;
     height: 38px;

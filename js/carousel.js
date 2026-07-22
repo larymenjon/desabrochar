@@ -85,6 +85,7 @@ function initCarousel(images){
 
   track.innerHTML = renderedSlides.map((slide, index) => `
     <figure class="photo-carousel__slide" data-slide-index="${index % slides.length}" data-physical-index="${index}">
+      <div class="photo-carousel__slide-bg" style="background-image:url('${escapeHtml(slide.src)}')" aria-hidden="true"></div>
       <img src="${escapeHtml(slide.src)}" alt="${escapeHtml(slide.alt)}" loading="${index < 3 ? "eager" : "lazy"}" decoding="async">
       ${slide.caption ? `<figcaption class="photo-carousel__caption">${escapeHtml(slide.caption)}</figcaption>` : ""}
     </figure>
