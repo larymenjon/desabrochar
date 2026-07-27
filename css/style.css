@@ -812,12 +812,19 @@ section{ position: relative; }
   line-height: 1.06;
   color: var(--fuchsia-deep);
 }
+.schedule-line__content p,
+.schedule-line__entry p{
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: .96rem;
+  line-height: 1.6;
+}
 .schedule-line__time{
   display:inline-flex;
   align-items:center;
   width: fit-content;
   font-family: var(--sans);
-  font-size: 1rem;
+  font-size: 1.08rem;
   letter-spacing: .22em;
   text-transform: uppercase;
   color: var(--fuchsia);
@@ -867,6 +874,7 @@ section{ position: relative; }
 .schedule-line__break-text{
   color: var(--ink-soft);
   line-height: 1.65;
+  font-size: .96rem;
 }
 
 /* =========================================================
@@ -1310,7 +1318,7 @@ section{ position: relative; }
     font-size: 1.4rem;
   }
   .schedule-line__time{
-    font-size: .9rem;
+    font-size: .92rem;
   }
   .carousel-lightbox{
     padding: 12px;
