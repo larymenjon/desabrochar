@@ -100,15 +100,9 @@ function initCarousel(images){
   let currentIndex = 0;
   let autoplayId = null;
   let lastAutoplayFrame = null;
-  let slideWidth = 0;
+  let slideOffsets = [];
   let loopWidth = 0;
   let autoplayStoppedByUser = false;
-
-  const perView = () => {
-    const raw = getComputedStyle(document.documentElement).getPropertyValue("--carousel-per-view").trim();
-    const value = Number(raw);
-    return Number.isFinite(value) && value > 0 ? value : 3;
-  };
 
   const updateDots = () => {
     dotEls.forEach((dot, dotIndex) => {
@@ -121,20 +115,15 @@ function initCarousel(images){
     stopAutoplay();
   };
 
-  const layoutSlides = () => {
-    const visibleSlides = Math.max(1, perView());
-    slideWidth = viewport.clientWidth / visibleSlides;
-    loopWidth = slideWidth * slides.length;
-    const isMobile = window.matchMedia("(max-width: 760px)").matches;
-    const slideHeight = isMobile ? slideWidth : slideWidth * 1.22;
-
-    viewport.style.height = `${slideHeight}px`;
-    track.style.width = `${slideWidth * slideEls.length}px`;
+  const measureSlides = () => {
+    let acc = 0;
+    slideOffsets = [];
     slideEls.forEach((slide) => {
-      slide.style.flex = `0 0 ${slideWidth}px`;
-      slide.style.width = `${slideWidth}px`;
-      slide.style.maxWidth = `${slideWidth}px`;
+      slideOffsets.push(acc);
+      acc += slide.offsetWidth;
     });
+    slideOffsets.push(acc);
+    loopWidth = slideOffsets[slides.length] || 0;
   };
 
   const normalizeLoop = () => {
@@ -148,30 +137,25 @@ function initCarousel(images){
   };
 
   const physicalIndexFromScroll = () => {
-    if (!slideWidth) return 0;
-    return Math.round(viewport.scrollLeft / slideWidth);
+    if (!slideOffsets.length) return 0;
+    const pos = viewport.scrollLeft;
+    for (let i = 0; i < slideOffsets.length - 1; i++){
+      if (pos < slideOffsets[i + 1] - 0.5) return i;
+    }
+    return slideOffsets.length - 2;
   };
 
   const scrollToIndex = (index, smooth = true) => {
     currentIndex = (index + slides.length) % slides.length;
     normalizeLoop();
 
-    const currentPhysicalIndex = physicalIndexFromScroll();
-    const currentCycle = Math.floor(currentPhysicalIndex / slides.length);
-    const candidates = [
-      (currentCycle - 1) * slides.length + currentIndex,
-      currentCycle * slides.length + currentIndex,
-      (currentCycle + 1) * slides.length + currentIndex
-    ].filter((candidate) => candidate >= 0 && candidate < slideEls.length);
+    if (!slideOffsets.length) return;
 
-    const targetPhysicalIndex = candidates.reduce((best, candidate) => {
-      if (best === null) return candidate;
-      return Math.abs(candidate - currentPhysicalIndex) < Math.abs(best - currentPhysicalIndex) ? candidate : best;
-    }, null);
+    const current = viewport.scrollLeft;
+    const candidateA = slideOffsets[currentIndex];
+    const candidateB = slideOffsets[currentIndex + slides.length];
+    const targetLeft = Math.abs(candidateA - current) <= Math.abs(candidateB - current) ? candidateA : candidateB;
 
-    if (targetPhysicalIndex === null) return;
-
-    const targetLeft = targetPhysicalIndex * slideWidth;
     viewport.scrollTo({
       left: targetLeft,
       behavior: smooth ? "smooth" : "auto"
@@ -182,8 +166,8 @@ function initCarousel(images){
   const syncFromScroll = () => {
     normalizeLoop();
 
-    const viewportLeft = viewport.scrollLeft;
-    currentIndex = slideWidth ? Math.round(viewportLeft / slideWidth) % slides.length : 0;
+    const physicalIndex = physicalIndexFromScroll();
+    currentIndex = slides.length ? physicalIndex % slides.length : 0;
     updateDots();
   };
 
@@ -306,20 +290,32 @@ function initCarousel(images){
 
   if ("ResizeObserver" in window){
     const observer = new ResizeObserver(() => {
-      layoutSlides();
+      measureSlides();
       scrollToIndex(currentIndex, false);
     });
     observer.observe(viewport);
   } else {
     window.addEventListener("resize", () => {
-      layoutSlides();
+      measureSlides();
       scrollToIndex(currentIndex, false);
     });
   }
 
-  layoutSlides();
+  const preloadSlideImages = () => Promise.all(slides.map((slide) => new Promise((resolve) => {
+    const probe = new Image();
+    probe.onload = resolve;
+    probe.onerror = resolve;
+    probe.src = slide.src;
+  })));
+
+  measureSlides();
   scrollToIndex(0, false);
-  startAutoplay();
+
+  preloadSlideImages().then(() => {
+    measureSlides();
+    scrollToIndex(currentIndex, false);
+    startAutoplay();
+  });
 }
 
 if (carousel){

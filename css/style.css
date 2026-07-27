@@ -20,7 +20,6 @@
 
   --container: 1120px;
   --radius: 2px;
-  --carousel-per-view: 3;
 }
 
 *{ box-sizing: border-box; }
@@ -294,8 +293,7 @@ h1,h2,h3{
   gap: 14px;
 }
 .photo-carousel__viewport{
-  aspect-ratio: 3 / 1;
-  height: auto;
+  height: clamp(220px, 26vw, 380px);
   overflow-x: auto;
   overflow-y: hidden;
   border-radius: 22px;
@@ -318,28 +316,22 @@ h1,h2,h3{
 }
 .photo-carousel__slide{
   position: relative;
-  flex: 0 0 calc(100% / var(--carousel-per-view));
+  flex: 0 0 auto;
   height: 100%;
   padding: 0;
   margin: 0;
   isolation: isolate;
-  scroll-snap-align: start;
   cursor: pointer;
 }
 .photo-carousel__slide-bg{
-  position: absolute;
-  inset: -20px;
-  background-size: cover;
-  background-position: center;
-  filter: blur(24px) brightness(.82) saturate(1.15);
-  transform: scale(1.15);
-  z-index: 0;
+  display: none;
 }
 .photo-carousel__slide img{
-  min-width: 0;
-  width:100%;
-  height:100%;
-  object-fit: cover;
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: none;
+  object-fit: contain;
   background: rgba(255,249,244,.88);
   border-radius: 0;
   position: relative;
@@ -1082,7 +1074,6 @@ section{ position: relative; }
   .info-grid{ grid-template-columns: repeat(2,1fr); }
 }
 @media (max-width: 760px){
-  :root{ --carousel-per-view: 2; }
   .hero{ padding-top: 120px; }
   .brand img{ height: 46px; }
   .hero h1{ font-size: clamp(2.35rem, 10vw, 3.5rem); }
@@ -1107,10 +1098,6 @@ section{ position: relative; }
     margin-top: 26px;
     padding: 24px 0 22px;
   }
-  .photo-carousel__slide img{
-    object-fit: contain;
-    object-position: center;
-  }
   .photo-carousel{
     grid-template-columns: minmax(0, 1fr);
     gap: 0;
@@ -1128,7 +1115,7 @@ section{ position: relative; }
   .photo-carousel__control--next{ right: 8px; }
   .photo-carousel__dots{ margin-top: 16px; }
   .photo-carousel__viewport{
-    aspect-ratio: 2 / 1;
+    height: clamp(170px, 46vw, 260px);
     border-radius: 0;
     border-left: 0;
     border-right: 0;
@@ -1167,7 +1154,6 @@ section{ position: relative; }
   }
 }
 @media (max-width: 520px){
-  :root{ --carousel-per-view: 1; }
   .info-grid{ grid-template-columns: 1fr; }
   .modal{ padding: 40px 26px 32px; }
   .hero-meta{ gap: 16px; flex-direction: column; align-items:center; }
@@ -1178,7 +1164,7 @@ section{ position: relative; }
   .photo-carousel-shell{
     padding: 22px 0 18px;
   }
-  .photo-carousel__viewport{ aspect-ratio: 4 / 5; }
+  .photo-carousel__viewport{ height: clamp(150px, 50vw, 220px); }
   .photo-carousel__control{
     width: 38px;
     height: 38px;
