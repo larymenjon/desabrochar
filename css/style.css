@@ -750,6 +750,125 @@ section{ position: relative; }
   font-weight:300;
 }
 
+.schedule-lines{
+  display:flex;
+  flex-direction:column;
+  gap: 18px;
+  margin: 14px auto 0;
+  max-width: 900px;
+}
+.schedule-line{
+  display:grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+  padding: 24px;
+  border-radius: 28px;
+  border: 1px solid rgba(216,181,122,.24);
+  background:
+    radial-gradient(circle at top right, rgba(216,181,122,.12), transparent 34%),
+    linear-gradient(180deg, rgba(255,249,244,.98) 0%, rgba(248,239,230,.97) 100%);
+  box-shadow: 0 22px 48px -34px rgba(75,23,36,.24);
+}
+.schedule-line__header{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap: 8px;
+  padding: 4px 2px;
+}
+.schedule-line__day{
+  font-family: var(--serif);
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1;
+  color: var(--fuchsia-deep);
+}
+.schedule-line__date{
+  display:inline-flex;
+  align-items:center;
+  gap: 10px;
+  width: fit-content;
+  font-size: .8rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+}
+.schedule-line__date::before{
+  content:'';
+  width: 24px;
+  height: 1px;
+  background: var(--gold);
+}
+.schedule-line__content{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap: 8px;
+  padding: 8px 0;
+}
+.schedule-line__content h3,
+.schedule-line__entry h3{
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  line-height: 1.06;
+  color: var(--fuchsia-deep);
+}
+.schedule-line__time{
+  display:inline-flex;
+  align-items:center;
+  width: fit-content;
+  font-family: var(--sans);
+  font-size: 1rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--fuchsia);
+  font-weight: 500;
+}
+.schedule-line__content--stacked{
+  gap: 16px;
+}
+.schedule-line__entry{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  padding: 12px 0;
+}
+.schedule-line__entry + .schedule-line__entry{
+  border-top: 1px solid rgba(216,181,122,.18);
+  padding-top: 18px;
+}
+.schedule-line__break{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+  padding: 18px 18px 16px;
+  border-radius: 22px;
+  border: 1px dashed rgba(138,83,97,.24);
+  background: rgba(255,249,244,.72);
+  text-align: left;
+}
+.schedule-line__break-label{
+  display:inline-flex;
+  align-items:center;
+  gap: 10px;
+  width: fit-content;
+  font-family: var(--sans);
+  font-size: .74rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  font-weight: 500;
+}
+.schedule-line__break-label::before{
+  content:'';
+  width: 22px;
+  height: 1px;
+  background: var(--gold);
+}
+.schedule-line__break-text{
+  color: var(--ink-soft);
+  line-height: 1.65;
+}
+
 /* =========================================================
    CTA BAND
    ========================================================= */
@@ -1072,6 +1191,8 @@ section{ position: relative; }
    ========================================================= */
 @media (max-width: 900px){
   .info-grid{ grid-template-columns: repeat(2,1fr); }
+  .schedule-lines{ max-width: 100%; }
+  .schedule-line{ grid-template-columns: 1fr; gap: 14px; }
 }
 @media (max-width: 760px){
   .hero{ padding-top: 120px; }
@@ -1152,6 +1273,9 @@ section{ position: relative; }
     width:100%;
     justify-content:center;
   }
+  .schedule-line{
+    padding: 20px 18px;
+  }
 }
 @media (max-width: 520px){
   .info-grid{ grid-template-columns: 1fr; }
@@ -1177,6 +1301,16 @@ section{ position: relative; }
   }
   .photo-carousel-head h2{
     font-size: clamp(1.35rem, 8vw, 1.9rem);
+  }
+  .schedule-line__day{
+    font-size: 1.75rem;
+  }
+  .schedule-line__content h3,
+  .schedule-line__entry h3{
+    font-size: 1.4rem;
+  }
+  .schedule-line__time{
+    font-size: .9rem;
   }
   .carousel-lightbox{
     padding: 12px;
