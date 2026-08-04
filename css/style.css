@@ -199,11 +199,11 @@ h1,h2,h3{
    PROMO BANNER
    ========================================================= */
 .promo-banner{
-  padding: 112px 24px 0;
-  background: #fff9f4;
+  width: 100%;
+  margin: 0 auto 34px;
 }
 .promo-banner__frame{
-  width: min(1180px, 100%);
+  width: 100%;
   margin: 0 auto;
   border-radius: 18px;
   overflow: hidden;
@@ -227,7 +227,7 @@ h1,h2,h3{
   text-align:center;
   overflow:hidden;
   background: linear-gradient(180deg, #fff9f4 0%, #f8efe6 55%, #f6e6e6 100%);
-  padding: 78px 24px 100px;
+  padding: 126px 24px 100px;
 }
 .hero-inner{
   position:relative;
@@ -1227,13 +1227,13 @@ section{ position: relative; }
 }
 @media (max-width: 760px){
   .promo-banner{
-    padding: 92px 16px 0;
+    margin-bottom: 24px;
   }
   .promo-banner__frame{
     border-radius: 12px;
     box-shadow: 0 14px 30px -24px rgba(75,23,36,.38);
   }
-  .hero{ padding-top: 58px; }
+  .hero{ padding: 104px 16px 86px; }
   .brand img{ height: 46px; }
   .hero h1{ font-size: clamp(2.35rem, 10vw, 3.5rem); }
   .hero-sub{ max-width: 100%; }
@@ -1324,7 +1324,7 @@ section{ position: relative; }
 }
 @media (max-width: 520px){
   .promo-banner{
-    padding: 86px 10px 0;
+    margin-bottom: 20px;
   }
   .promo-banner__frame{
     border-radius: 10px;
