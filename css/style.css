@@ -196,6 +196,26 @@ h1,h2,h3{
 }
 
 /* =========================================================
+   PROMO BANNER
+   ========================================================= */
+.promo-banner{
+  padding: 112px 24px 0;
+  background: #fff9f4;
+}
+.promo-banner__frame{
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px -28px rgba(75,23,36,.35);
+}
+.promo-banner img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+/* =========================================================
    HERO
    ========================================================= */
 .hero{
@@ -207,7 +227,7 @@ h1,h2,h3{
   text-align:center;
   overflow:hidden;
   background: linear-gradient(180deg, #fff9f4 0%, #f8efe6 55%, #f6e6e6 100%);
-  padding: 140px 24px 100px;
+  padding: 78px 24px 100px;
 }
 .hero-inner{
   position:relative;
@@ -1206,7 +1226,14 @@ section{ position: relative; }
   .schedule-line{ grid-template-columns: 1fr; gap: 14px; }
 }
 @media (max-width: 760px){
-  .hero{ padding-top: 120px; }
+  .promo-banner{
+    padding: 92px 16px 0;
+  }
+  .promo-banner__frame{
+    border-radius: 12px;
+    box-shadow: 0 14px 30px -24px rgba(75,23,36,.38);
+  }
+  .hero{ padding-top: 58px; }
   .brand img{ height: 46px; }
   .hero h1{ font-size: clamp(2.35rem, 10vw, 3.5rem); }
   .hero-sub{ max-width: 100%; }
@@ -1296,6 +1323,12 @@ section{ position: relative; }
   }
 }
 @media (max-width: 520px){
+  .promo-banner{
+    padding: 86px 10px 0;
+  }
+  .promo-banner__frame{
+    border-radius: 10px;
+  }
   .info-grid{ grid-template-columns: 1fr; }
   .modal{ padding: 40px 26px 32px; }
   .hero-meta{ gap: 16px; flex-direction: column; align-items:center; }

@@ -1,5 +1,5 @@
 import { db, COLLECTION_NAME } from "./firebase-config.js";
-import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ---------- Header on scroll ---------- */
 const header = document.getElementById("siteHeader");
@@ -24,6 +24,7 @@ const nomeInput = document.getElementById("nomeInput");
 const telefoneInput = document.getElementById("telefoneInput");
 const nomeError = document.getElementById("nomeError");
 const telefoneError = document.getElementById("telefoneError");
+const REGISTRATION_STORAGE_KEY = "desabrochar_inscricao_confirmada";
 
 function clearErrors(){
   if (!nomeError || !telefoneError || !nomeInput || !telefoneInput) return;
@@ -45,9 +46,28 @@ function closeModal(){
   }, 350);
 }
 
+function hasLocalRegistration(){
+  return localStorage.getItem(REGISTRATION_STORAGE_KEY) === "true";
+}
+
+function markLocalRegistration(){
+  localStorage.setItem(REGISTRATION_STORAGE_KEY, "true");
+}
+
+function showSuccessState(){
+  if (!overlay || !modal) return;
+  overlay.classList.add("is-open");
+  modal.classList.add("is-success");
+  document.body.style.overflow = "hidden";
+}
+
 function openModal(e){
   if (!overlay || !modal) return;
   if (e) e.preventDefault();
+  if (hasLocalRegistration()){
+    showSuccessState();
+    return;
+  }
   overlay.classList.add("is-open");
   document.body.style.overflow = "hidden";
   setTimeout(() => document.getElementById("nomeInput")?.focus(), 300);
@@ -103,6 +123,10 @@ function validate(){
   return valid;
 }
 
+function getPhoneDigits(){
+  return telefoneInput.value.replace(/\D/g, "");
+}
+
 if (form && submitBtn && modal && nomeInput && telefoneInput && nomeError && telefoneError){
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -112,16 +136,20 @@ if (form && submitBtn && modal && nomeInput && telefoneInput && nomeError && tel
     submitBtn.disabled = true;
 
     try{
-      await addDoc(collection(db, COLLECTION_NAME), {
+      const telefoneDigits = getPhoneDigits();
+      const registrationRef = doc(db, COLLECTION_NAME, telefoneDigits);
+      await setDoc(registrationRef, {
         nome: nomeInput.value.trim(),
         telefone: telefoneInput.value.trim(),
+        telefoneDigits,
         criadoEm: serverTimestamp()
       });
 
+      markLocalRegistration();
       modal.classList.add("is-success");
     } catch (err){
-      console.error("Erro ao salvar inscrição:", err);
-      telefoneError.textContent = "Não foi possível enviar. Verifique sua conexão e tente novamente.";
+      console.error("Erro ao salvar inscriÃ§Ã£o:", err);
+      telefoneError.textContent = "Nao foi possivel enviar. Verifique sua conexao e tente novamente.";
     } finally {
       submitBtn.classList.remove("is-loading");
       submitBtn.disabled = false;
